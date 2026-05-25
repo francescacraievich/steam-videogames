@@ -51,15 +51,21 @@
     font-weight: 700;
     color: #fff;
     letter-spacing: -0.5px;
-    margin-right: 32px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     gap: 8px;
   }
   .steam-logo svg { width: 28px; height: 28px; }
-  .topnav-links { display: flex; gap: 0; height: 52px; }
+  .topnav-links {
+    display: flex;
+    gap: 0;
+    height: 52px;
+    flex: 1;
+    justify-content: center;
+  }
   .topnav-link {
-    padding: 0 16px;
+    padding: 0 18px;
     height: 52px;
     display: flex;
     align-items: center;
@@ -67,8 +73,11 @@
     color: var(--steam-muted);
     border-bottom: 2px solid transparent;
     white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
   }
-  .topnav-link.active { color: #fff; border-bottom-color: var(--steam-blue); }
+  .topnav-link.active { color: var(--steam-blue); border-bottom-color: var(--steam-blue); }
 
   /* HERO BANNER */
   .hero {
