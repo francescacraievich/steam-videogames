@@ -38,13 +38,18 @@
   .topnav {
     background: var(--steam-sidebar);
     border-bottom: 1px solid #000;
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
     height: 52px;
     position: sticky;
     top: 0;
     z-index: 100;
+  }
+  .topnav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    height: 52px;
   }
   .steam-logo {
     font-size: 22px;
@@ -82,14 +87,19 @@
   .subnav {
     background: #1b2838;
     border-bottom: 1px solid rgba(0,0,0,0.3);
+    height: 36px;
+    position: sticky;
+    top: 52px;
+    z-index: 99;
+  }
+  .subnav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
     padding: 0 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 36px;
-    position: sticky;
-    top: 52px;
-    z-index: 99;
   }
   .subnav-links { display: flex; gap: 0; height: 36px; }
   .subnav-link {
@@ -671,6 +681,7 @@
 
 <!-- TOP NAV -->
 <nav class="topnav">
+  <div class="topnav-inner">
   <div class="steam-logo">
     <svg viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="10" fill="#1a9fff" opacity="0.2"/>
@@ -684,10 +695,12 @@
     <div class="topnav-link">Dataset: FronkonGames</div>
     <div class="topnav-link">Group: 3 students</div>
   </div>
+  </div><!-- /topnav-inner -->
 </nav>
 
 <!-- SECONDARY NAV -->
 <div class="subnav">
+  <div class="subnav-inner">
   <div class="subnav-links">
     <div class="subnav-link">Browse
       <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -709,6 +722,7 @@
     <svg viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 10l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     <input type="text" placeholder="Search the store...">
   </div>
+  </div><!-- /subnav-inner -->
 </div>
 
 <!-- HERO -->
