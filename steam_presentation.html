@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Steam Data Visualization — Exam Project</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --steam-bg: #1b2838;
+    --steam-sidebar: #171a21;
+    --steam-panel: #16202d;
+    --steam-card: #1e2d3d;
+    --steam-blue: #1a9fff;
+    --steam-blue-dark: #1785d4;
+    --steam-highlight: #c7d5e0;
+    --steam-muted: #8f98a0;
+    --steam-border: #2a3f5f;
+    --steam-green: #5ba32b;
+    --steam-orange: #e69826;
+    --font-main: 'Inter', 'Arial', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-main);
+    background: var(--steam-bg);
+    color: var(--steam-highlight);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* TOP NAV */
+  .topnav {
+    background: var(--steam-sidebar);
+    border-bottom: 1px solid #000;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .steam-logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+    margin-right: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .steam-logo svg { width: 28px; height: 28px; }
+  .topnav-links { display: flex; gap: 0; height: 52px; }
+  .topnav-link {
+    padding: 0 16px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: var(--steam-muted);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .topnav-link.active { color: #fff; border-bottom-color: var(--steam-blue); }
+
+  /* HERO BANNER */
+  .hero {
+    background: linear-gradient(180deg, #1b3a5c 0%, #1b2838 100%);
+    border-bottom: 1px solid var(--steam-border);
+    padding: 28px 32px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232a475e' fill-opacity='0.3'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+  .hero-inner { position: relative; max-width: 1100px; }
+  .hero-tag {
+    display: inline-block;
+    background: var(--steam-blue);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+  .hero h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .hero-sub {
+    font-size: 14px;
+    color: var(--steam-muted);
+    margin-bottom: 16px;
+  }
+  .hero-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .meta-pill {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--steam-border);
+    border-radius: 3px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--steam-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .meta-pill span { color: var(--steam-highlight); font-weight: 500; }
+
+  /* MAIN LAYOUT */
+  .main {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    flex: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 24px 16px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* SIDEBAR */
+  .sidebar { position: sticky; top: 72px; }
+  .sidebar-section {
+    background: var(--steam-panel);
+    border: 1px solid var(--steam-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .sidebar-title {
+    background: linear-gradient(90deg, #2a475e, #1b3a5c);
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--steam-muted);
+    border-bottom: 1px solid var(--steam-border);
+  }
+  .sidebar-item {
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--steam-muted);
+    cursor: pointer;
+    border-bottom: 1px solid rgba(42,63,95,0.5);
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.4;
+  }
+  .sidebar-item:last-child { border-bottom: none; }
+  .sidebar-item:hover { background: rgba(255,255,255,0.04); color: #fff; }
+  .sidebar-item.active {
+    background: linear-gradient(90deg, rgba(26,159,255,0.15), transparent);
+    color: #fff;
+    border-left: 3px solid var(--steam-blue);
+    padding-left: 11px;
+  }
+  .sidebar-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--steam-border);
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .sidebar-item.active .sidebar-dot { background: var(--steam-blue); }
+  .sidebar-person {
+    font-size: 10px;
+    color: var(--steam-blue);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  /* INFO BOX */
+  .info-box {
+    background: var(--steam-panel);
+    border: 1px solid var(--steam-border);
+    border-radius: 4px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--steam-muted);
+    line-height: 1.6;
+  }
+  .info-box strong {
+    color: var(--steam-highlight);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* CONTENT AREA */
+  .content { min-width: 0; }
+  .panel {
+    display: none;
+    animation: fadeIn 0.25s ease;
+  }
+  .panel.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* PANEL HEADER */
+  .panel-header {
+    background: var(--steam-panel);
+    border: 1px solid var(--steam-border);
+    border-radius: 4px 4px 0 0;
+    padding: 16px 20px;
+    border-bottom: none;
+  }
+  .panel-person-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .badge-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .panel-question {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+  .panel-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .panel-list li {
+    font-size: 13px;
+    color: var(--steam-muted);
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .panel-list li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--steam-border);
+  }
+  .panel-list li span { color: var(--steam-highlight); }
+
+  /* CHART BOX */
+  .chart-box {
+    background: var(--steam-card);
+    border: 1px solid var(--steam-border);
+    padding: 20px 24px;
+  }
+  .chart-wrapper { position: relative; }
+  .chart-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--steam-highlight);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--steam-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chart-source {
+    font-size: 11px;
+    color: var(--steam-muted);
+    font-weight: 400;
+  }
+
+  /* TAKEAWAY */
+  .takeaway {
+    background: var(--steam-panel);
+    border: 1px solid var(--steam-border);
+    border-radius: 0 0 4px 4px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-top: 2px solid var(--steam-green);
+  }
+  .takeaway-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+  .takeaway-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--steam-green);
+    margin-bottom: 6px;
+  }
+  .takeaway-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .takeaway-list li {
+    font-size: 13px;
+    color: var(--steam-highlight);
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .takeaway-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--steam-green);
+    font-size: 10px;
+    top: 3px;
+  }
+
+  /* MAPPING TABLE */
+  .mapping-box {
+    background: var(--steam-panel);
+    border: 1px solid var(--steam-border);
+    border-radius: 4px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+  .mapping-title {
+    background: rgba(26,159,255,0.08);
+    padding: 8px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--steam-blue);
+    border-bottom: 1px solid var(--steam-border);
+  }
+  table.mapping { width: 100%; border-collapse: collapse; }
+  table.mapping th {
+    padding: 8px 16px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--steam-muted);
+    text-align: left;
+    border-bottom: 1px solid var(--steam-border);
+    font-weight: 600;
+  }
+  table.mapping td {
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--steam-highlight);
+    border-bottom: 1px solid rgba(42,63,95,0.4);
+  }
+  table.mapping tr:last-child td { border-bottom: none; }
+  table.mapping tr:hover td { background: rgba(255,255,255,0.02); }
+  .type-tag {
+    display: inline-block;
+    background: rgba(26,159,255,0.12);
+    color: var(--steam-blue);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    border: 1px solid rgba(26,159,255,0.2);
+  }
+  .type-tag.cat {
+    background: rgba(91,163,43,0.12);
+    color: #5ba32b;
+    border-color: rgba(91,163,43,0.2);
+  }
+  .type-tag.ord {
+    background: rgba(230,152,38,0.12);
+    color: #e69826;
+    border-color: rgba(230,152,38,0.2);
+  }
+
+  /* INTRO PANEL */
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .intro-card {
+    background: var(--steam-card);
+    border: 1px solid var(--steam-border);
+    border-radius: 4px;
+    padding: 16px 18px;
+  }
+  .intro-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--steam-blue);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--steam-border);
+  }
+  .intro-card ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .intro-card ul li {
+    font-size: 13px;
+    color: var(--steam-muted);
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .intro-card ul li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--steam-border);
+  }
+  .intro-card ul li strong { color: var(--steam-highlight); }
+
+  .questions-overview {
+    background: var(--steam-panel);
+    border: 1px solid var(--steam-border);
+    border-radius: 4px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+  .questions-overview-title {
+    background: rgba(26,159,255,0.08);
+    padding: 8px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--steam-blue);
+    border-bottom: 1px solid var(--steam-border);
+  }
+  .question-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(42,63,95,0.4);
+  }
+  .question-row:last-child { border-bottom: none; }
+  .question-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .question-text {
+    font-size: 13px;
+    color: var(--steam-highlight);
+    line-height: 1.5;
+    flex: 1;
+  }
+  .question-author {
+    font-size: 11px;
+    color: var(--steam-muted);
+    font-weight: 500;
+    white-space: nowrap;
+    padding-top: 3px;
+  }
+
+  /* CONTRIBUTI PANEL */
+  .contrib-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .contrib-card {
+    background: var(--steam-card);
+    border: 1px solid var(--steam-border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .contrib-header {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--steam-border);
+  }
+  .contrib-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .contrib-name { font-size: 14px; font-weight: 600; color: #fff; }
+  .contrib-body {
+    padding: 12px 16px;
+  }
+  .contrib-body ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .contrib-body ul li {
+    font-size: 12px;
+    color: var(--steam-muted);
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .contrib-body ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    font-size: 9px;
+    top: 3px;
+  }
+
+  /* BONUS PANEL */
+  .bonus-box {
+    background: var(--steam-card);
+    border: 1px solid var(--steam-border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-top: 0;
+  }
+  .bonus-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--steam-blue);
+    margin-bottom: 4px;
+  }
+  .bonus-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  .discarded-chart-mock {
+    background: var(--steam-panel);
+    border: 1px solid var(--steam-border);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+    color: var(--steam-muted);
+    font-size: 13px;
+  }
+
+  .section-divider {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--steam-muted);
+    margin: 20px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--steam-border);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--steam-sidebar); }
+  ::-webkit-scrollbar-thumb { background: #2a3f5f; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--steam-blue); }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="steam-logo">
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" fill="#1a9fff" opacity="0.2"/>
+      <path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.65 7.87 6.39 9.34L12 14c-.33-.07-.67-.11-1-.11-2.76 0-5 2.24-5 5" stroke="#1a9fff" stroke-width="1.5"/>
+      <circle cx="12" cy="11" r="3" fill="#1a9fff"/>
+    </svg>
+    STEAM DataVis
+  </div>
+  <div class="topnav-links">
+    <div class="topnav-link active">Exam Project</div>
+    <div class="topnav-link">Dataset: FronkonGames</div>
+    <div class="topnav-link">Group: 3 students</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Data Visualization — Final Exam</div>
+    <h1>Steam Games: three questions, three answers</h1>
+    <p class="hero-sub">Exploratory analysis of the Steam gaming market — 122,000+ games, 2003–2025</p>
+    <div class="hero-meta">
+      <div class="meta-pill">Dataset <span>FronkonGames — Kaggle</span></div>
+      <div class="meta-pill">Games <span>122,000+</span></div>
+      <div class="meta-pill">Period <span>2003–2025</span></div>
+      <div class="meta-pill">Group <span>3 students</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Navigation</div>
+      <div class="sidebar-item active" onclick="showPanel('intro', this)">
+        <div class="sidebar-dot"></div>
+        <div>
+          <div>Introduction</div>
+          <div class="sidebar-person">Dataset &amp; questions</div>
+        </div>
+      </div>
+      <div class="sidebar-item" onclick="showPanel('q1', this)">
+        <div class="sidebar-dot"></div>
+        <div>
+          <div>Price &amp; quality</div>
+          <div class="sidebar-person">Francesco</div>
+        </div>
+      </div>
+      <div class="sidebar-item" onclick="showPanel('q2', this)">
+        <div class="sidebar-dot"></div>
+        <div>
+          <div>Twitch vs Steam</div>
+          <div class="sidebar-person">Lucas</div>
+        </div>
+      </div>
+      <div class="sidebar-item" onclick="showPanel('q3', this)">
+        <div class="sidebar-dot"></div>
+        <div>
+          <div>Hours per genre</div>
+          <div class="sidebar-person">Francesca</div>
+        </div>
+      </div>
+      <div class="sidebar-item" onclick="showPanel('contributi', this)">
+        <div class="sidebar-dot"></div>
+        <div>
+          <div>Contributions</div>
+          <div class="sidebar-person">Individual</div>
+        </div>
+      </div>
+      <div class="sidebar-item" onclick="showPanel('bonus', this)">
+        <div class="sidebar-dot"></div>
+        <div>
+          <div>Bonus</div>
+          <div class="sidebar-person">Discarded vis.</div>
+        </div>
+      </div>
+    </div>
+    <div class="info-box">
+      <strong>Data sources</strong>
+      FronkonGames Steam Dataset<br>
+      Kaggle · 122k games · CC-BY 4.0<br><br>
+      Twitch Game Data<br>
+      Kaggle · top titles · 2024
+    </div>
+    <div class="info-box" style="margin-top:10px">
+      <strong>Tools</strong>
+      Python · pandas<br>
+      Chart.js · HTML/CSS
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- INTRO PANEL -->
+    <div id="intro" class="panel active">
+      <div class="panel-header">
+        <div class="panel-person-badge" style="color:var(--steam-blue)">
+          <div class="badge-dot" style="background:var(--steam-blue)"></div>
+          Introduction
+        </div>
+        <div class="panel-question">The Steam gaming market</div>
+        <ul class="panel-list">
+          <li>Public dataset with <span>122,000+ games</span> published between 2003 and 2025</li>
+          <li>Main attributes: price, genre, user ratings, release date, estimated owners</li>
+          <li>Secondary source (Q2): Twitch Game Data — viewership hours per title</li>
+          <li>Open-source dataset, license <span>CC-BY 4.0</span></li>
+        </ul>
+      </div>
+
+      <div class="intro-grid">
+        <div class="intro-card">
+          <div class="intro-card-title">Dataset — Steam</div>
+          <ul>
+            <li>Total games: <strong>122,411</strong></li>
+            <li>Period: <strong>2003–2025</strong></li>
+            <li>Unique genres: <strong>30+</strong></li>
+            <li>Price: from <strong>free-to-play</strong> to €60+</li>
+            <li>Ratings: % positive reviews</li>
+          </ul>
+        </div>
+        <div class="intro-card">
+          <div class="intro-card-title">Dataset — Twitch</div>
+          <ul>
+            <li>Tracked titles: <strong>top 500</strong></li>
+            <li>Metric: hours watched (millions)</li>
+            <li>Overlap with Steam: <strong>~400 titles</strong></li>
+            <li>Period: <strong>2016–2023</strong></li>
+            <li>Used exclusively for Q2</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="questions-overview" style="margin-top:16px">
+        <div class="questions-overview-title">Research questions</div>
+        <div class="question-row">
+          <div class="question-num" style="background:rgba(91,163,43,0.2);color:#5ba32b">1</div>
+          <div class="question-text">Are the most expensive games really the best?</div>
+          <div class="question-author" style="color:#5ba32b">Francesco</div>
+        </div>
+        <div class="question-row">
+          <div class="question-num" style="background:rgba(26,159,255,0.2);color:#1a9fff">2</div>
+          <div class="question-text">Are the most watched games on Twitch also the most played on Steam?</div>
+          <div class="question-author" style="color:#1a9fff">Lucas</div>
+        </div>
+        <div class="question-row">
+          <div class="question-num" style="background:rgba(230,152,38,0.2);color:#e69826">3</div>
+          <div class="question-text">Which genre retains players the most?</div>
+          <div class="question-author" style="color:#e69826">Francesca</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q1 — FRANCESCO -->
+    <div id="q1" class="panel">
+      <div class="panel-header" style="border-top: 3px solid #5ba32b">
+        <div class="panel-person-badge" style="color:#5ba32b">
+          <div class="badge-dot" style="background:#5ba32b"></div>
+          Francesco
+        </div>
+        <div class="panel-question">Are the most expensive games really the best?</div>
+        <ul class="panel-list">
+          <li>Relationship between <span>price range</span> and <span>% positive reviews</span> on Steam</li>
+          <li>Games grouped into 5 ranges: Free-to-play, €0–5, €5–15, €15–30, €30+</li>
+          <li>Median + IQR per range (simplified box plot)</li>
+        </ul>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">
+          Median rating by price range
+          <span class="chart-source">Source: FronkonGames Steam Dataset (Kaggle) · CC-BY 4.0</span>
+        </div>
+        <div class="chart-wrapper" style="height:300px">
+          <canvas id="chartFrancesco"></canvas>
+        </div>
+      </div>
+      <div class="takeaway">
+        <div class="takeaway-icon">💡</div>
+        <div>
+          <div class="takeaway-label">Take-home message</div>
+          <ul class="takeaway-list">
+            <li>The <strong>€15–30</strong> range has the highest median rating (82%) and the lowest variance</li>
+            <li><strong>Free-to-play</strong> games are the most polarized: high rating dispersion</li>
+            <li><strong>Premium games (€30+)</strong> do not guarantee higher quality than the mid-range</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mapping-box">
+        <div class="mapping-title">Mapping: attributes → visual channels</div>
+        <table class="mapping">
+          <tr><th>Attribute</th><th>Type</th><th>Visual channel</th></tr>
+          <tr><td>Price range</td><td><span class="type-tag ord">Ordinal</span></td><td>X axis position (ordered categories)</td></tr>
+          <tr><td>% positive reviews</td><td><span class="type-tag">Quantitative</span></td><td>Y axis position (median)</td></tr>
+          <tr><td>Rating dispersion</td><td><span class="type-tag">Quantitative</span></td><td>Color (saturation) + tooltip Q1/Q3</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Q2 — LUCAS -->
+    <div id="q2" class="panel">
+      <div class="panel-header" style="border-top: 3px solid #1a9fff">
+        <div class="panel-person-badge" style="color:#1a9fff">
+          <div class="badge-dot" style="background:#1a9fff"></div>
+          Lucas
+        </div>
+        <div class="panel-question">Are the most watched games on Twitch also the most played on Steam?</div>
+        <ul class="panel-list">
+          <li>Correlation between <span>Twitch viewership hours</span> and <span>estimated Steam owners</span></li>
+          <li>Top 40 titles present on both platforms</li>
+          <li>Color by game genre — labels for main outliers</li>
+        </ul>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">
+          Twitch viewership vs Steam owners — top 40 titles
+          <span class="chart-source">Twitch Game Data + FronkonGames Steam Dataset (Kaggle)</span>
+        </div>
+        <div class="chart-wrapper" style="height:300px">
+          <canvas id="chartLucas"></canvas>
+        </div>
+      </div>
+      <div class="takeaway" style="border-top-color:#1a9fff">
+        <div class="takeaway-icon">💡</div>
+        <div>
+          <div class="takeaway-label" style="color:#1a9fff">Take-home message</div>
+          <ul class="takeaway-list">
+            <li><strong>Positive correlation</strong> but non-linear between viewership and owners</li>
+            <li><strong>DOTA 2 and CS:GO</strong> dominate Twitch and have the largest install base</li>
+            <li><strong>Elden Ring</strong>: high viewership, relatively contained owners — the "Twitch effect" is not proportional to sales</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mapping-box">
+        <div class="mapping-title">Mapping: attributes → visual channels</div>
+        <table class="mapping">
+          <tr><th>Attribute</th><th>Type</th><th>Visual channel</th></tr>
+          <tr><td>Hours watched on Twitch</td><td><span class="type-tag">Quantitative</span></td><td>X axis position</td></tr>
+          <tr><td>Estimated Steam owners</td><td><span class="type-tag">Quantitative</span></td><td>Y axis position</td></tr>
+          <tr><td>Game genre</td><td><span class="type-tag cat">Categorical</span></td><td>Color (hue)</td></tr>
+          <tr><td>Game name</td><td><span class="type-tag cat">Categorical</span></td><td>Text label (outliers)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Q3 — FRANCESCA -->
+    <div id="q3" class="panel">
+      <div class="panel-header" style="border-top: 3px solid #e69826">
+        <div class="panel-person-badge" style="color:#e69826">
+          <div class="badge-dot" style="background:#e69826"></div>
+          Francesca
+        </div>
+        <div class="panel-question">Which genre retains players the most?</div>
+        <ul class="panel-list">
+          <li>Metric: <span>median playtime forever</span> — median total hours per user, per genre</li>
+          <li>Median preferred over mean: outliers like DOTA 2 and Forza strongly skew the mean</li>
+          <li>12 main game genres · hover for sample size per genre</li>
+        </ul>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">
+          Median hours played by genre — all Steam titles
+          <span class="chart-source">Source: FronkonGames Steam Dataset (Kaggle) · CC-BY 4.0</span>
+        </div>
+        <div class="chart-wrapper" style="height:380px">
+          <canvas id="chartTu"></canvas>
+        </div>
+      </div>
+      <div class="takeaway" style="border-top-color:#e69826">
+        <div class="takeaway-icon">💡</div>
+        <div>
+          <div class="takeaway-label" style="color:#e69826">Take-home message</div>
+          <ul class="takeaway-list">
+            <li><strong>Massively Multiplayer</strong> retains players the most (6.2h median) — designed for the long run</li>
+            <li><strong>RPG and Strategy</strong> follow: deep progression = longer sessions</li>
+            <li><strong>Racing and Free to Play</strong> have a very high mean (74h, 81h) but low median — a few viral titles (Forza, DOTA 2) pull the average up</li>
+            <li><strong>Action and Casual</strong> have the lowest median: fast consumption, short sessions</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mapping-box">
+        <div class="mapping-title">Mapping: attributes → visual channels</div>
+        <table class="mapping">
+          <tr><th>Attribute</th><th>Type</th><th>Visual channel</th></tr>
+          <tr><td>Game genre</td><td><span class="type-tag cat">Categorical</span></td><td>Y axis position (categories sorted by value)</td></tr>
+          <tr><td>Median hours played</td><td><span class="type-tag">Quantitative</span></td><td>Bar length (X axis)</td></tr>
+          <tr><td>Genre with most hours</td><td><span class="type-tag cat">Categorical</span></td><td>Color (hue) — blue highlights the answer genre</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONTRIBUTI INDIVIDUALI -->
+    <div id="contributi" class="panel">
+      <div class="panel-header">
+        <div class="panel-person-badge" style="color:var(--steam-blue)">
+          <div class="badge-dot" style="background:var(--steam-blue)"></div>
+          Group
+        </div>
+        <div class="panel-question">Individual contributions</div>
+        <ul class="panel-list">
+          <li>Each member handled an independent research question</li>
+          <li>Shared data preprocessing (Python · pandas)</li>
+        </ul>
+      </div>
+
+      <div class="contrib-grid">
+        <!-- Francesco -->
+        <div class="contrib-card">
+          <div class="contrib-header">
+            <div class="contrib-avatar" style="background:#5ba32b">F</div>
+            <div>
+              <div class="contrib-name">Francesco</div>
+              <div style="font-size:11px;color:#5ba32b;margin-top:2px">Q1 — Price &amp; quality</div>
+            </div>
+          </div>
+          <div class="contrib-body">
+            <ul>
+              <li>Definition of price ranges</li>
+              <li>Median and IQR calculation per range</li>
+              <li>Design and implementation of bar chart</li>
+              <li>Analysis and writing of Q1 take-home message</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Lucas -->
+        <div class="contrib-card">
+          <div class="contrib-header">
+            <div class="contrib-avatar" style="background:#1a9fff">L</div>
+            <div>
+              <div class="contrib-name">Lucas</div>
+              <div style="font-size:11px;color:#1a9fff;margin-top:2px">Q2 — Twitch vs Steam</div>
+            </div>
+          </div>
+          <div class="contrib-body">
+            <ul>
+              <li>Join between Steam and Twitch datasets</li>
+              <li>Selection of top 40 common titles</li>
+              <li>Design of scatter plot with genre encoding</li>
+              <li>Outlier analysis and Q2 take-home message</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Francesca -->
+        <div class="contrib-card">
+          <div class="contrib-header">
+            <div class="contrib-avatar" style="background:#e69826">F</div>
+            <div>
+              <div class="contrib-name">Francesca</div>
+              <div style="font-size:11px;color:#e69826;margin-top:2px">Q3 — Hours per genre</div>
+            </div>
+          </div>
+          <div class="contrib-body">
+            <ul>
+              <li>Computation of median playtime per genre</li>
+              <li>Filter of game genres (software excluded)</li>
+              <li>Design of horizontal bar chart</li>
+              <li>Outlier analysis and Q3 take-home message</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="mapping-box" style="margin-top:16px">
+        <div class="mapping-title">Shared work</div>
+        <table class="mapping">
+          <tr><th>Task</th><th>Responsible</th></tr>
+          <tr><td>Dataset selection and acquisition</td><td>All</td></tr>
+          <tr><td>Python preprocessing (cleaning, nulls, types)</td><td>All</td></tr>
+          <tr><td>HTML / CSS presentation structure</td><td>All</td></tr>
+          <tr><td>Cross-review of visualizations</td><td>All</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- BONUS — VISUALIZZAZIONE SCARTATA -->
+    <div id="bonus" class="panel">
+      <div class="panel-header">
+        <div class="panel-person-badge" style="color:var(--steam-blue)">
+          <div class="badge-dot" style="background:var(--steam-blue)"></div>
+          Bonus
+        </div>
+        <div class="panel-question">Discarded visualization — and why</div>
+        <ul class="panel-list">
+          <li>For Q1 we evaluated a <span>scatter plot</span> price (X axis) vs rating (Y axis)</li>
+          <li>One point per game — approximately <span>122,000 points</span> total</li>
+        </ul>
+      </div>
+
+      <div class="bonus-box">
+        <div class="bonus-label">Discarded visualization — Q1</div>
+        <div class="bonus-title">Scatter plot: individual price vs rating</div>
+
+        <div class="discarded-chart-mock">
+          <div style="font-size:32px;margin-bottom:8px;opacity:0.3">&#9642;&#9642;&#9642;&#9642;&#9642;&#9642;&#9642;&#9642;</div>
+          <div style="color:var(--steam-muted);font-size:13px">122,000+ overlapping points → total overplotting<br>No readable pattern</div>
+        </div>
+
+        <div class="section-divider">Why it was discarded</div>
+        <ul class="panel-list" style="margin-bottom:16px">
+          <li><span>Extreme overplotting</span>: 122k points fully overlap, making any pattern unreadable</li>
+          <li>Price is a continuous variable with strong concentrations (€0, €5, €10, €15...) — not uniformly distributed</li>
+          <li>Hard to compare price ranges without aggregation</li>
+          <li>Even with transparency or jitter, density made the chart unclear</li>
+        </ul>
+
+        <div class="section-divider">Chosen alternative</div>
+        <ul class="panel-list">
+          <li>Aggregation into <span>ordered price ranges</span> → overplotting eliminated</li>
+          <li>Bar chart with median → immediate main message (which range is "best")</li>
+          <li>IQR shown in tooltip → detail for those who want to explore further</li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+function showPanel(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+
+// CHART 1 — FRANCESCO — Bar chart (median per price range)
+const ctx1 = document.getElementById('chartFrancesco').getContext('2d');
+const labels1 = ['Free-to-play', '€0–5', '€5–15', '€15–30', '€30+'];
+const medians  = [68, 74, 77, 82, 76];
+const q1s      = [45, 62, 68, 74, 65];
+const q3s      = [88, 84, 86, 90, 85];
+const colors1  = ['#c94f2c','#1a9fff','#5ba32b','#5ba32b','#e69826'];
+
+new Chart(ctx1, {
+  type: 'bar',
+  data: {
+    labels: labels1,
+    datasets: [{
+      label: 'Median rating (%)',
+      data: medians,
+      backgroundColor: colors1.map(c => c + 'aa'),
+      borderColor: colors1,
+      borderWidth: 2,
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#16202d',
+        borderColor: '#2a3f5f',
+        borderWidth: 1,
+        titleColor: '#c7d5e0',
+        bodyColor: '#8f98a0',
+        callbacks: {
+          afterBody: (items) => {
+            const i = items[0].dataIndex;
+            return [`Q1 (25th): ${q1s[i]}%`, `Q3 (75th): ${q3s[i]}%`, `IQR: ${q3s[i]-q1s[i]}pp`];
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(42,63,95,0.5)' },
+        ticks: { color: '#8f98a0', font: { size: 12 } }
+      },
+      y: {
+        min: 40, max: 100,
+        grid: { color: 'rgba(42,63,95,0.5)' },
+        ticks: {
+          color: '#8f98a0',
+          font: { size: 12 },
+          callback: v => v + '%'
+        },
+        title: { display: true, text: '% positive reviews (median)', color: '#8f98a0', font: { size: 12 } }
+      }
+    }
+  }
+});
+
+// CHART 2 — LUCAS — Scatter
+const ctx2 = document.getElementById('chartLucas').getContext('2d');
+const scatterData = [
+  { x: 920, y: 150, label: 'DOTA 2',          genre: 'MOBA' },
+  { x: 850, y: 130, label: 'CS:GO',            genre: 'FPS' },
+  { x: 420, y: 90,  label: 'GTA V',            genre: 'Action' },
+  { x: 380, y: 45,  label: 'Elden Ring',       genre: 'RPG' },
+  { x: 310, y: 70,  label: 'Apex Legends',     genre: 'FPS' },
+  { x: 280, y: 55,  label: 'Rust',             genre: 'Survival' },
+  { x: 260, y: 40,  label: 'RDR2',             genre: 'Action' },
+  { x: 220, y: 38,  label: 'Hogwarts Legacy',  genre: 'RPG' },
+  { x: 200, y: 60,  label: 'Fortnite',         genre: 'Battle Royale' },
+  { x: 180, y: 30,  label: 'Cyberpunk 2077',   genre: 'RPG' },
+  { x: 160, y: 28,  label: "Baldur's Gate 3",  genre: 'RPG' },
+  { x: 140, y: 22,  label: 'Hades',            genre: 'Roguelike' },
+  { x: 120, y: 18,  label: 'Stardew Valley',   genre: 'Indie' },
+  { x: 100, y: 15,  label: 'Dead by Daylight', genre: 'Horror' },
+  { x: 80,  y: 12,  label: 'The Forest',       genre: 'Survival' },
+  { x: 60,  y: 8,   label: 'Valheim',          genre: 'Survival' },
+  { x: 50,  y: 6,   label: 'Hollow Knight',    genre: 'Indie' },
+  { x: 40,  y: 5,   label: 'Disco Elysium',    genre: 'RPG' },
+];
+
+const genreColors = {
+  'MOBA': '#1a9fff', 'FPS': '#c94f2c', 'Action': '#e69826',
+  'RPG': '#8b6cef', 'Survival': '#5ba32b', 'Battle Royale': '#26a69a',
+  'Roguelike': '#f5c518', 'Indie': '#e91e8c', 'Horror': '#8f98a0'
+};
+
+new Chart(ctx2, {
+  type: 'scatter',
+  data: {
+    datasets: [{
+      label: 'Games',
+      data: scatterData.map(d => ({ x: d.x, y: d.y, label: d.label, genre: d.genre })),
+      backgroundColor: scatterData.map(d => genreColors[d.genre] + 'aa'),
+      borderColor: scatterData.map(d => genreColors[d.genre]),
+      borderWidth: 1.5,
+      pointRadius: 7,
+      pointHoverRadius: 9,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#16202d',
+        borderColor: '#2a3f5f',
+        borderWidth: 1,
+        titleColor: '#c7d5e0',
+        bodyColor: '#8f98a0',
+        callbacks: {
+          title: items => items[0].raw.label,
+          label: item => [
+            `Twitch: ${item.raw.x}M hours`,
+            `Steam owners: ${item.raw.y}M`,
+            `Genre: ${item.raw.genre}`
+          ]
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(42,63,95,0.5)' },
+        ticks: { color: '#8f98a0', font: { size: 12 }, callback: v => v + 'M' },
+        title: { display: true, text: 'Hours watched on Twitch (millions)', color: '#8f98a0', font: { size: 12 } }
+      },
+      y: {
+        grid: { color: 'rgba(42,63,95,0.5)' },
+        ticks: { color: '#8f98a0', font: { size: 12 }, callback: v => v + 'M' },
+        title: { display: true, text: 'Estimated Steam owners (millions)', color: '#8f98a0', font: { size: 12 } }
+      }
+    }
+  }
+});
+
+// CHART 3 — FRANCESCA — Bar chart: median playtime per genre
+const ctx3 = document.getElementById('chartTu').getContext('2d');
+
+const genreLabels = ['Massively Multiplayer','RPG','Strategy','Simulation','Early Access','Adventure','Sports','Action','Indie','Casual','Racing','Free To Play'];
+const medianHours = [6.2, 5.1, 4.9, 4.0, 3.7, 3.6, 3.5, 3.5, 3.3, 3.2, 3.1, 2.7];
+const nGames      = [714, 5941, 5842, 6482, 1793, 10848, 1097, 11031, 17270, 8680, 886, 1564];
+
+// Solo Massively Multiplayer in blu Steam, tutti gli altri in grigio neutro
+const barColors = genreLabels.map((_, i) => i === 0 ? '#1a9fff' : '#3a4a5c');
+
+new Chart(ctx3, {
+  type: 'bar',
+  data: {
+    labels: genreLabels,
+    datasets: [{
+      label: 'Median hours played',
+      data: medianHours,
+      backgroundColor: barColors,
+      borderColor: barColors,
+      borderWidth: 0,
+      borderRadius: 2,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#16202d',
+        borderColor: '#2a3f5f',
+        borderWidth: 1,
+        titleColor: '#c7d5e0',
+        bodyColor: '#8f98a0',
+        callbacks: {
+          title: items => items[0].label,
+          label: item => `  Median: ${medianHours[item.dataIndex]}h  ·  n=${nGames[item.dataIndex].toLocaleString()} games`
+        }
+      }
+    },
+    scales: {
+      x: {
+        max: 7,
+        grid: { color: 'rgba(42,63,95,0.5)' },
+        ticks: { color: '#8f98a0', font: { size: 11 }, callback: v => v + 'h' },
+        title: { display: true, text: 'Median hours played per user', color: '#8f98a0', font: { size: 11 } }
+      },
+      y: {
+        grid: { color: 'rgba(42,63,95,0.3)' },
+        ticks: {
+          color: (ctx) => ctx.index === 0 ? '#ffffff' : '#8f98a0',
+          font: (ctx) => ({ size: 12, weight: ctx.index === 0 ? '600' : '400' })
+        }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
