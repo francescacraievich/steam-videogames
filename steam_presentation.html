@@ -922,13 +922,13 @@
         <div class="panel-question">Are the most watched games on Twitch also the most played on Steam?</div>
         <ul class="panel-list">
           <li>Correlation between <span>Twitch viewership hours</span> and <span>estimated Steam owners</span></li>
-          <li>Top 40 titles present on both platforms</li>
-          <li>Color by game genre — labels for main outliers</li>
+          <li>16 titles present on both platforms — real data from Twitch_game_data.csv + Steam dataset</li>
+          <li>Twitch hours aggregated across all months (2016–2023) · color by genre</li>
         </ul>
       </div>
       <div class="chart-box">
         <div class="chart-title">
-          Twitch viewership vs Steam owners — top 40 titles
+          Twitch viewership vs Steam owners — 16 titles (real data)
           <span class="chart-source">Twitch Game Data + FronkonGames Steam Dataset (Kaggle)</span>
         </div>
         <div class="chart-wrapper" style="height:300px">
@@ -940,9 +940,9 @@
         <div>
           <div class="takeaway-label" style="color:#1a9fff">Take-home message</div>
           <ul class="takeaway-list">
-            <li><strong>Positive correlation</strong> but non-linear between viewership and owners</li>
-            <li><strong>DOTA 2 and CS:GO</strong> dominate Twitch and have the largest install base</li>
-            <li><strong>Elden Ring</strong>: high viewership, relatively contained owners — the "Twitch effect" is not proportional to sales</li>
+            <li><strong>F2P games</strong> (Dota 2, PUBG: Battlegrounds) show the strongest alignment between Twitch hours and Steam owners</li>
+            <li><strong>GTA V</strong> leads Twitch viewership (~7.5B hours) but has proportionally fewer Steam owners — driven by content creators, not player count</li>
+            <li>Correlation exists but is <strong>non-linear</strong>: high Twitch audience doesn't guarantee proportionally more Steam installs</li>
           </ul>
         </div>
       </div>
@@ -1201,31 +1201,32 @@ new Chart(ctx1, {
 
 // CHART 2 — LUCAS — Scatter
 const ctx2 = document.getElementById('chartLucas').getContext('2d');
+// Real data: Twitch hours = sum across all months 2016-2023 (millions)
+// Steam owners = midpoint of SteamSpy range (millions)
 const scatterData = [
-  { x: 920, y: 150, label: 'DOTA 2',          genre: 'MOBA' },
-  { x: 850, y: 130, label: 'CS:GO',            genre: 'FPS' },
-  { x: 420, y: 90,  label: 'GTA V',            genre: 'Action' },
-  { x: 380, y: 45,  label: 'Elden Ring',       genre: 'RPG' },
-  { x: 310, y: 70,  label: 'Apex Legends',     genre: 'FPS' },
-  { x: 280, y: 55,  label: 'Rust',             genre: 'Survival' },
-  { x: 260, y: 40,  label: 'RDR2',             genre: 'Action' },
-  { x: 220, y: 38,  label: 'Hogwarts Legacy',  genre: 'RPG' },
-  { x: 200, y: 60,  label: 'Fortnite',         genre: 'Battle Royale' },
-  { x: 180, y: 30,  label: 'Cyberpunk 2077',   genre: 'RPG' },
-  { x: 160, y: 28,  label: "Baldur's Gate 3",  genre: 'RPG' },
-  { x: 140, y: 22,  label: 'Hades',            genre: 'Roguelike' },
-  { x: 120, y: 18,  label: 'Stardew Valley',   genre: 'Indie' },
-  { x: 100, y: 15,  label: 'Dead by Daylight', genre: 'Horror' },
-  { x: 80,  y: 12,  label: 'The Forest',       genre: 'Survival' },
-  { x: 60,  y: 8,   label: 'Valheim',          genre: 'Survival' },
-  { x: 50,  y: 6,   label: 'Hollow Knight',    genre: 'Indie' },
-  { x: 40,  y: 5,   label: 'Disco Elysium',    genre: 'RPG' },
+  { x: 7482, y: 7.5,  label: 'GTA V',                  genre: 'Action' },
+  { x: 4504, y: 150,  label: 'Dota 2',                  genre: 'MOBA' },
+  { x: 1865, y: 150,  label: 'PUBG: BATTLEGROUNDS',     genre: 'Battle Royale' },
+  { x: 1400, y: 35,   label: 'Dead by Daylight',        genre: 'Horror' },
+  { x: 1169, y: 35,   label: 'Rust',                    genre: 'Survival' },
+  { x:  876, y: 15,   label: 'Counter-Strike',          genre: 'FPS' },
+  { x:  816, y: 15,   label: 'Rocket League',           genre: 'Sports' },
+  { x:  756, y: 35,   label: 'Path of Exile',           genre: 'RPG' },
+  { x:  660, y: 35,   label: 'Among Us',                genre: 'Indie' },
+  { x:  629, y: 35,   label: 'Destiny 2',               genre: 'FPS' },
+  { x:  590, y: 35,   label: 'Elden Ring',              genre: 'RPG' },
+  { x:  524, y: 1.5,  label: 'World of Tanks',          genre: 'Action' },
+  { x:  504, y: 75,   label: 'Lost Ark',                genre: 'RPG' },
+  { x:  394, y: 15,   label: 'StarCraft II',            genre: 'Strategy' },
+  { x:  351, y: 15,   label: 'DayZ',                    genre: 'Survival' },
+  { x:  327, y: 7.5,  label: 'FIFA 23',                 genre: 'Sports' },
 ];
 
 const genreColors = {
   'MOBA': '#1a9fff', 'FPS': '#c94f2c', 'Action': '#e69826',
   'RPG': '#8b6cef', 'Survival': '#5ba32b', 'Battle Royale': '#26a69a',
-  'Roguelike': '#f5c518', 'Indie': '#e91e8c', 'Horror': '#8f98a0'
+  'Horror': '#8f98a0', 'Sports': '#f5c518', 'Indie': '#e91e8c',
+  'Strategy': '#ff6b6b'
 };
 
 new Chart(ctx2, {
