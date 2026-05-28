@@ -928,7 +928,7 @@
       </div>
       <div class="chart-box">
         <div class="chart-title">
-          Twitch viewership vs Steam owners — 16 titles (real data)
+          Twitch viewership vs Steam owners — 14 titles · x-axis capped at 2,000M (GTA V: 7,482M, Dota 2: 4,504M off-chart)
           <span class="chart-source">Twitch Game Data + FronkonGames Steam Dataset (Kaggle)</span>
         </div>
         <div class="chart-wrapper" style="height:300px">
@@ -940,9 +940,9 @@
         <div>
           <div class="takeaway-label" style="color:#1a9fff">Take-home message</div>
           <ul class="takeaway-list">
-            <li><strong>F2P games</strong> (Dota 2, PUBG: Battlegrounds) show the strongest alignment between Twitch hours and Steam owners</li>
-            <li><strong>GTA V</strong> leads Twitch viewership (~7.5B hours) but has proportionally fewer Steam owners — driven by content creators, not player count</li>
-            <li>Correlation exists but is <strong>non-linear</strong>: high Twitch audience doesn't guarantee proportionally more Steam installs</li>
+            <li><strong>GTA V</strong> (7,482M h) and <strong>Dota 2</strong> (4,504M h) are extreme outliers — off-chart for readability</li>
+            <li><strong>F2P games</strong> (PUBG: Battlegrounds, Lost Ark) show the strongest alignment between Twitch viewership and Steam ownership</li>
+            <li>Correlation exists but is <strong>non-linear</strong>: high viewership doesn't guarantee proportionally more Steam installs</li>
           </ul>
         </div>
       </div>
@@ -1203,9 +1203,8 @@ new Chart(ctx1, {
 const ctx2 = document.getElementById('chartLucas').getContext('2d');
 // Real data: Twitch hours = sum across all months 2016-2023 (millions)
 // Steam owners = midpoint of SteamSpy range (millions)
+// GTA V (7,482M h) and Dota 2 (4,504M h) excluded as extreme outliers — cited in take-home message
 const scatterData = [
-  { x: 7482, y: 7.5,  label: 'GTA V',                  genre: 'Action' },
-  { x: 4504, y: 150,  label: 'Dota 2',                  genre: 'MOBA' },
   { x: 1865, y: 150,  label: 'PUBG: BATTLEGROUNDS',     genre: 'Battle Royale' },
   { x: 1400, y: 35,   label: 'Dead by Daylight',        genre: 'Horror' },
   { x: 1169, y: 35,   label: 'Rust',                    genre: 'Survival' },
@@ -1267,6 +1266,7 @@ new Chart(ctx2, {
       x: {
         grid: { color: 'rgba(42,63,95,0.5)' },
         ticks: { color: '#8f98a0', font: { size: 12 }, callback: v => v + 'M' },
+        max: 2000,
         title: { display: true, text: 'Hours watched on Twitch (millions)', color: '#8f98a0', font: { size: 12 } }
       },
       y: {
