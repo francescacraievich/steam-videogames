@@ -922,13 +922,14 @@
         <div class="panel-question">Are the most watched games on Twitch also the most played on Steam?</div>
         <ul class="panel-list">
           <li>Correlation between <span>Twitch viewership hours</span> and <span>estimated Steam owners</span></li>
-          <li>16 titles present on both platforms — real data from Twitch_game_data.csv + Steam dataset</li>
-          <li>Twitch hours aggregated across all months (2016–2023) · color by genre</li>
+          <li>25 titles present on both platforms — real data from Twitch_game_data.csv + Steam dataset</li>
+          <li>Twitch hours aggregated across all months (2016–2023) · color by Category</li>
         </ul>
       </div>
       <div class="chart-box">
         <div class="chart-title">
-          Twitch viewership vs Steam owners — 14 titles · x-axis capped at 2,000M (GTA V: 7,482M, Dota 2: 4,504M off-chart)
+          Twitch viewership vs Steam owners — 25 titles · x-axis capped at 2,000M 
+          <!-- (Just Chatting: 14.398M, GTA V: 7,482M, Dota 2: 4,504M, off-chart) -->
           <span class="chart-source">Twitch Game Data + FronkonGames Steam Dataset (Kaggle)</span>
         </div>
         <div class="chart-wrapper" style="height:300px">
@@ -952,7 +953,7 @@
           <tr><th>Attribute</th><th>Type</th><th>Visual channel</th></tr>
           <tr><td>Hours watched on Twitch</td><td><span class="type-tag">Quantitative</span></td><td>X axis position</td></tr>
           <tr><td>Estimated Steam owners</td><td><span class="type-tag">Quantitative</span></td><td>Y axis position</td></tr>
-          <tr><td>Game genre</td><td><span class="type-tag cat">Categorical</span></td><td>Color (hue)</td></tr>
+          <tr><td>Game Category</td><td><span class="type-tag cat">Categorical</span></td><td>Color (hue)</td></tr>
           <tr><td>Game name</td><td><span class="type-tag cat">Categorical</span></td><td>Text label (outliers)</td></tr>
         </table>
       </div>
@@ -1204,6 +1205,7 @@ const ctx2 = document.getElementById('chartLucas').getContext('2d');
 // Real data: Twitch hours = sum across all months 2016-2023 (millions)
 // Steam owners = midpoint of SteamSpy range (millions)
 // GTA V (7,482M h) and Dota 2 (4,504M h) excluded as extreme outliers — cited in take-home message
+/*
 const scatterData = [
   { x: 1865, y: 150,  label: 'PUBG: BATTLEGROUNDS',     genre: 'Battle Royale' },
   { x: 1400, y: 35,   label: 'Dead by Daylight',        genre: 'Horror' },
@@ -1220,12 +1222,58 @@ const scatterData = [
   { x:  351, y: 15,   label: 'DayZ',                    genre: 'Survival' },
   { x:  327, y: 7.5,  label: 'FIFA 23',                 genre: 'Sports' },
 ];
+*/
 
-const genreColors = {
-  'MOBA': '#1a9fff', 'FPS': '#c94f2c', 'Action': '#e69826',
-  'RPG': '#8b6cef', 'Survival': '#5ba32b', 'Battle Royale': '#26a69a',
-  'Horror': '#8f98a0', 'Sports': '#f5c518', 'Indie': '#e91e8c',
-  'Strategy': '#ff6b6b'
+
+const scatterData = [
+  // ── 25 main games ──────────────────────────────────────────────────────────
+
+  { x: 1865, y: 35,  label: 'PUBG: BATTLEGROUNDS',           category: 'Multi-player',  priceClass: 'Free'  },
+  { x: 1170, y: 35,   label: 'Rust',                         category: 'Multi-player',  priceClass: '€1–30' },
+  { x: 1400, y: 35,   label: 'Dead by Daylight',             category: 'Multi-player',  priceClass: '€1–30' },
+  { x:  876, y: 15,   label: 'Counter-Strike',               category: 'Multi-player',  priceClass: '€1–30' },
+  { x:  816, y: 15,   label: 'Rocket League',                category: 'Single-player', priceClass: 'Free'  },
+  { x:  756, y: 35,   label: 'Path of Exile',                category: 'Single-player', priceClass: 'Free'  },
+  { x:  675, y: 35,   label: 'Among Us',                     category: 'Multi-player',  priceClass: '€1–30' },
+  { x:  629, y: 35,   label: 'Destiny 2',                    category: 'Single-player', priceClass: 'Free'  },
+  { x:  585, y: 39,   label: 'Elden Ring',                   category: 'Single-player', priceClass: '€30+'  },
+  { x:  524, y: 1.5,  label: 'World of Tanks',               category: 'Multi-player',  priceClass: 'Free'  },
+  { x:  504, y: 75,   label: 'Lost Ark',                     category: 'Single-player', priceClass: 'Free'  },
+  { x:  405, y: 15,   label: 'StarCraft II',                 category: 'Multi-player',  priceClass: 'Free'  },
+  { x:  351, y: 15,   label: 'DayZ',                         category: 'Multi-player',  priceClass: '€1–30' },
+  { x:  282, y: 1.5,  label: 'Diablo IV',                    category: 'Single-player', priceClass: '€1–30' },
+  { x:  222, y: 15,   label: 'Phasmophobia',                 category: 'Single-player', priceClass: '€1–30' },
+  { x:  230, y: 20,   label: 'Red Dead Redemption 2',        category: 'Single-player', priceClass: '€1–30' },
+  { x:  175, y: 35,   label: 'ARK: Survival Evolved',        category: 'Single-player', priceClass: '€1–30' },
+  { x:  153, y: 1.5,  label: 'Call Of Duty: Modern Warfare', category: 'Single-player', priceClass: '€1–30' },
+  { x:  121, y: 15,   label: '7 Days to Die',                category: 'Single-player', priceClass: '€1–30' },
+  { x:  119, y: 3.5,  label: 'Tekken 7',                     category: 'Single-player', priceClass: '€1–30' },
+  { x:  118, y: 35,   label: 'Cyberpunk 2077',               category: 'Single-player', priceClass: '€1–30' },
+  { x:   89, y: 7.5,  label: 'FIFA 23',                      category: 'Single-player', priceClass: '€30+'  },
+  { x:   54, y: 3.5,  label: 'Call of Duty: WWII',           category: 'Single-player', priceClass: '€1–30' },
+  
+  // ── off-chart outliers — stacked at different Y so each is hoverable ───────
+  { x: 1990, y: 10, label: 'Off-chart titles', category: 'outlier', priceClass: null, outlier: true,
+    outlierDetails: [
+      { label: 'Just Chatting', realX: 14398, priceClass: 'Free'  },
+      { label: 'GTA V',         realX: 7482,  priceClass: '€30+'  },
+      { label: 'Fortnite',      realX: 6225,  priceClass: 'Free'  },
+      {label: 'Dota 2',         realX: 4504,  priceClass: 'Free'  },
+      {label: 'Apex Legends', realX: 2655, priceClass: 'Free'  },
+    ]
+  },
+];
+
+const categoryColors = {
+  'Single-player': '#8b6cef',
+  'Multi-player':  '#26a69a',
+  'outlier':       '#ff4757',
+};
+
+const priceSizes = {
+  'Free':   5,
+  '€1–30':  8,
+  '€30+':  12,
 };
 
 new Chart(ctx2, {
@@ -1233,12 +1281,18 @@ new Chart(ctx2, {
   data: {
     datasets: [{
       label: 'Games',
-      data: scatterData.map(d => ({ x: d.x, y: d.y, label: d.label, genre: d.genre })),
-      backgroundColor: scatterData.map(d => genreColors[d.genre] + 'aa'),
-      borderColor: scatterData.map(d => genreColors[d.genre]),
-      borderWidth: 1.5,
-      pointRadius: 7,
-      pointHoverRadius: 9,
+      data: scatterData.map(d => ({
+        x: d.x, y: d.y,
+        label: d.label, category: d.category,
+        priceClass: d.priceClass, outlier: d.outlier || false,
+        realX: d.realX || null, outlierDetails: d.outlierDetails || null
+      })),
+      backgroundColor: scatterData.map(d => categoryColors[d.category] + (d.outlier ? '55' : 'aa')),
+      borderColor:     scatterData.map(d => categoryColors[d.category]),
+      borderWidth:     scatterData.map(d => d.outlier ? 1 : 1.5),
+      pointRadius:     scatterData.map(d => d.outlier ? 6 : priceSizes[d.priceClass]),
+      pointHoverRadius:scatterData.map(d => d.outlier ? 8 : priceSizes[d.priceClass] + 2),
+      pointStyle:      scatterData.map(d => d.outlier ? 'circle' : 'circle'),
     }]
   },
   options: {
@@ -1253,12 +1307,17 @@ new Chart(ctx2, {
         titleColor: '#c7d5e0',
         bodyColor: '#8f98a0',
         callbacks: {
-          title: items => items[0].raw.label,
-          label: item => [
-            `Twitch: ${item.raw.x}M hours`,
-            `Steam owners: ${item.raw.y}M`,
-            `Genre: ${item.raw.genre}`
-          ]
+          title: items => items[0].raw.outlier ? '⚠ Off-chart titles' : items[0].raw.label,
+          label: item => item.raw.outlier
+            ? item.raw.outlierDetails.flatMap(o => [
+              `${o.label}: ${o.realX.toLocaleString()}M hrs (off-chart) · Price: ${o.priceClass}`,
+              ])
+            : [
+                `Twitch: ${item.raw.x}M hours`,
+                `Steam owners: ${item.raw.y}M`,
+                `Category: ${item.raw.category}`,
+                `Price: ${item.raw.priceClass}`
+              ]
         }
       }
     },
