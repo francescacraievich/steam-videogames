@@ -831,7 +831,7 @@
             <li>Total games: <strong>122,411</strong></li>
             <li>Period: <strong>2003–2025</strong></li>
             <li>Unique genres: <strong>30+</strong></li>
-            <li>Price: from <strong>free-to-play</strong> to €60+</li>
+            <li>Price: from <strong>free-to-play</strong> to €50+</li>
             <li>Ratings: % positive reviews</li>
           </ul>
         </div>
@@ -890,7 +890,7 @@
         </div>
         <div style="background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:4px;padding:12px 14px;">
           <div style="font-size:11px;color:var(--steam-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Best median score</div>
-          <div style="font-size:22px;font-weight:700;color:#5ba32b;">83.0% <span style="font-size:13px;font-weight:400;color:var(--steam-muted);">$10–19</span></div>
+          <div style="font-size:22px;font-weight:700;color:#5ba32b;">83.0% <span style="font-size:13px;font-weight:400;color:var(--steam-muted);">$10–$19.99</span></div>
         </div>
         <div style="background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:4px;padding:12px 14px;">
           <div style="font-size:11px;color:var(--steam-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Worst median score</div>
@@ -902,7 +902,7 @@
         <div class="chart-title">
           <span id="q1-chart-title">Median positive review % by price tier</span>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"> 
-          <span class="chart-source">FronkonGames Steam Dataset · CC-BY 4.0</span> 
+          <span class="chart-source">Source: FronkonGames Steam Dataset (Kaggle) · CC-BY 4.0</span> 
         </div>
         </div>
         <div class="chart-wrapper" style="height:300px">
@@ -916,9 +916,9 @@
         <div>
           <div class="takeaway-label">Take-home message</div>
           <ul class="takeaway-list">
-            <li>The <strong>$10–19</strong> tier has the highest median satisfaction (83.0%) — mid-range games hit the quality sweet spot</li>
+            <li>The <strong>$10–$19.99</strong> tier has the highest median satisfaction (83.0%) — mid-range games hit the quality sweet spot</li>
             <li><strong>$50+ games</strong> score 65.8% median — nearly 18 points below the best tier, a dramatic drop-off</li>
-            <li>When factoring in price, <strong>$1–9 games</strong> deliver 16× more enjoyment per dollar than $50+ titles</li>
+            <li>When factoring in price, <strong>$0.01–$9.99 games</strong> deliver approximately 16× more enjoyment per dollar than $50+ titles</li>
           </ul>
         </div>
       </div>
@@ -1164,15 +1164,15 @@ function showPanel(id, el) {
 // CHART 1 — FRANCESCO — Price tier vs enjoyment (real data)
 const q1Data = [
   { tier: 'Free',   avg: 75.3, median: 78.3, value: null,  count: 7382  },
-  { tier: '$1–9',   avg: 77.4, median: 81.8, value: 16.36, count: 42636 },
-  { tier: '$10–19', avg: 79.0, median: 83.0, value: 5.53,  count: 5409  },
-  { tier: '$20–29', avg: 77.0, median: 81.4, value: 3.26,  count: 774   },
-  { tier: '$30–49', avg: 76.0, median: 78.8, value: 1.97,  count: 246   },
+  { tier: '$0.01–$9.99',   avg: 77.4, median: 81.8, value: 16.36, count: 42636 },
+  { tier: '$10–$19.99', avg: 79.0, median: 83.0, value: 5.53,  count: 5409  },
+  { tier: '$20–$29.99', avg: 77.0, median: 81.4, value: 3.26,  count: 774   },
+  { tier: '$30–$49.99', avg: 76.0, median: 78.8, value: 1.97,  count: 246   },
   { tier: '$50+',   avg: 60.1, median: 65.8, value: 0.01,  count: 208   },
 ];
 
 const q1Insights = {
-  median: 'The $10–19 tier leads at 83.0% median satisfaction. $50+ games fall to 65.8% — nearly 18 points behind. Price and quality do not scale together.',
+  median: 'The $10–$19.99 tier leads at 83.0% median satisfaction. $50+ games fall to 65.8% — nearly 18 points behind. Price and quality do not scale together.',
 };
 
 const q1Modes = {
