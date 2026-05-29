@@ -831,7 +831,7 @@
             <li>Total games: <strong>122,411</strong></li>
             <li>Period: <strong>2003–2025</strong></li>
             <li>Unique genres: <strong>30+</strong></li>
-            <li>Price: from <strong>free-to-play</strong> to €60+</li>
+            <li>Price: from <strong>free-to-play</strong> to €50+</li>
             <li>Ratings: % positive reviews</li>
           </ul>
         </div>
@@ -877,27 +877,48 @@
         <div class="panel-question">Are the most expensive games really the best?</div>
         <ul class="panel-list">
           <li>Relationship between <span>price range</span> and <span>% positive reviews</span> on Steam</li>
-          <li>Games grouped into 5 ranges: Free-to-play, €0–5, €5–15, €15–30, €30+</li>
-          <li>Median + IQR per range (simplified box plot)</li>
+          <li>56,655 games with at least 10 reviews · grouped into 6 price tiers</li>
+          <li>Median positive review % per tier · hover bars for game count</li>
         </ul>
       </div>
-      <div class="chart-box">
-        <div class="chart-title">
-          Median rating by price range
-          <span class="chart-source">Source: FronkonGames Steam Dataset (Kaggle) · CC-BY 4.0</span>
+
+      <!-- metric cards -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:0;background:var(--steam-card);border:1px solid var(--steam-border);border-bottom:none;padding:16px 20px 12px;">
+        <div style="background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:4px;padding:12px 14px;">
+          <div style="font-size:11px;color:var(--steam-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Total games analysed</div>
+          <div style="font-size:22px;font-weight:700;color:#fff;">56,655</div>
         </div>
-        <div class="chart-wrapper" style="height:300px">
-          <canvas id="chartFrancesco"></canvas>
+        <div style="background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:4px;padding:12px 14px;">
+          <div style="font-size:11px;color:var(--steam-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Best median score</div>
+          <div style="font-size:22px;font-weight:700;color:#5ba32b;">83.0% <span style="font-size:13px;font-weight:400;color:var(--steam-muted);">$10–$19.99</span></div>
+        </div>
+        <div style="background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:4px;padding:12px 14px;">
+          <div style="font-size:11px;color:var(--steam-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Worst median score</div>
+          <div style="font-size:22px;font-weight:700;color:#c94f2c;">65.8% <span style="font-size:13px;font-weight:400;color:var(--steam-muted);">$50+</span></div>
         </div>
       </div>
+
+      <div class="chart-box" style="border-top:none;">
+        <div class="chart-title">
+          <span id="q1-chart-title">Median positive review % by price tier</span>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"> 
+          <span class="chart-source">Source: FronkonGames Steam Dataset (Kaggle) · CC-BY 4.0</span> 
+        </div>
+        </div>
+        <div class="chart-wrapper" style="height:300px">
+          <canvas id="chartFrancesco" role="img" aria-label="Bar chart of Steam game price tiers vs review score.">Price tiers: Free 78.3%, $1-9 81.8%, $10-19 83%, $20-29 81.4%, $30-49 78.8%, $50+ 65.8%.</canvas>
+        </div>
+        <div id="q1-insight" style="margin-top:14px;padding:10px 12px;background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:3px;font-size:12px;color:var(--steam-muted);line-height:1.6;"></div>
+      </div>
+
       <div class="takeaway">
         <div class="takeaway-icon">💡</div>
         <div>
           <div class="takeaway-label">Take-home message</div>
           <ul class="takeaway-list">
-            <li>The <strong>€15–30</strong> range has the highest median rating (82%) and the lowest variance</li>
-            <li><strong>Free-to-play</strong> games are the most polarized: high rating dispersion</li>
-            <li><strong>Premium games (€30+)</strong> do not guarantee higher quality than the mid-range</li>
+            <li>The <strong>$10–$19.99</strong> tier has the highest median satisfaction (83.0%) — mid-range games hit the quality sweet spot</li>
+            <li><strong>$50+ games</strong> score 65.8% median — nearly 18 points below the best tier, a dramatic drop-off</li>
+            <li>When factoring in price, <strong>$0.01–$9.99 games</strong> deliver approximately 16× more enjoyment per dollar than $50+ titles</li>
           </ul>
         </div>
       </div>
@@ -906,8 +927,8 @@
         <table class="mapping">
           <tr><th>Attribute</th><th>Type</th><th>Visual channel</th></tr>
           <tr><td>Price range</td><td><span class="type-tag ord">Ordinal</span></td><td>X axis position (ordered categories)</td></tr>
-          <tr><td>% positive reviews</td><td><span class="type-tag">Quantitative</span></td><td>Y axis position (median)</td></tr>
-          <tr><td>Rating dispersion</td><td><span class="type-tag">Quantitative</span></td><td>Color (saturation) + tooltip Q1/Q3</td></tr>
+          <tr><td>% positive reviews</td><td><span class="type-tag">Quantitative</span></td><td>Y axis height (median or average)</td></tr>
+          <tr><td>Game count</td><td><span class="type-tag">Quantitative</span></td><td>Tooltip detail</td></tr>
         </table>
       </div>
     </div>
@@ -1140,25 +1161,46 @@ function showPanel(id, el) {
   el.classList.add('active');
 }
 
-// CHART 1 — FRANCESCO — Bar chart (median per price range)
-const ctx1 = document.getElementById('chartFrancesco').getContext('2d');
-const labels1 = ['Free-to-play', '€0–5', '€5–15', '€15–30', '€30+'];
-const medians  = [68, 74, 77, 82, 76];
-const q1s      = [45, 62, 68, 74, 65];
-const q3s      = [88, 84, 86, 90, 85];
-const colors1  = ['#c94f2c','#1a9fff','#5ba32b','#5ba32b','#e69826'];
+// CHART 1 — FRANCESCO — Price tier vs enjoyment (real data)
+const q1Data = [
+  { tier: 'Free',   avg: 75.3, median: 78.3, value: null,  count: 7382  },
+  { tier: '$0.01–$9.99',   avg: 77.4, median: 81.8, value: 16.36, count: 42636 },
+  { tier: '$10–$19.99', avg: 79.0, median: 83.0, value: 5.53,  count: 5409  },
+  { tier: '$20–$29.99', avg: 77.0, median: 81.4, value: 3.26,  count: 774   },
+  { tier: '$30–$49.99', avg: 76.0, median: 78.8, value: 1.97,  count: 246   },
+  { tier: '$50+',   avg: 60.1, median: 65.8, value: 0.01,  count: 208   },
+];
 
-new Chart(ctx1, {
+const q1Insights = {
+  median: 'The $10–$19.99 tier leads at 83.0% median satisfaction. $50+ games fall to 65.8% — nearly 18 points behind. Price and quality do not scale together.',
+};
+
+const q1Modes = {
+  median: { key: 'median', yLabel: '% positive reviews (median)', suffix: '%', min: 0, max: 90 },
+};
+
+function q1BarColors() {
+  return q1Data.map(d => d.median >= 82 ? '#5ba32b' : d.median >= 78 ? '#3a4a5c' : '#c94f2c');
+} 
+
+function q1BorderColors() {
+  return q1BarColors();
+}
+
+let q1CurrentMode = 'median';
+
+const ctx1 = document.getElementById('chartFrancesco').getContext('2d');
+const q1Chart = new Chart(ctx1, {
   type: 'bar',
   data: {
-    labels: labels1,
+    labels: q1Data.map(d => d.tier),
     datasets: [{
-      label: 'Median rating (%)',
-      data: medians,
-      backgroundColor: colors1.map(c => c + 'aa'),
-      borderColor: colors1,
+      data: q1Data.map(d => d.median),
+      backgroundColor: q1BarColors().map(c => c + 'bb'),
+      borderColor: q1BarColors(),
       borderWidth: 2,
       borderRadius: 3,
+      borderSkipped: false,
     }]
   },
   options: {
@@ -1173,9 +1215,12 @@ new Chart(ctx1, {
         titleColor: '#c7d5e0',
         bodyColor: '#8f98a0',
         callbacks: {
-          afterBody: (items) => {
-            const i = items[0].dataIndex;
-            return [`Q1 (25th): ${q1s[i]}%`, `Q3 (75th): ${q3s[i]}%`, `IQR: ${q3s[i]-q1s[i]}pp`];
+          title: items => items[0].label + ' games',
+          label: item => {
+            const m = q1Modes[q1CurrentMode];
+            const d = q1Data[item.dataIndex];
+            const val = item.raw !== null ? item.raw.toFixed(1) + m.suffix : 'N/A (free)';
+            return [` ${m.yLabel}: ${val}`, ` Games in tier: ${d.count.toLocaleString()}`];
           }
         }
       }
@@ -1186,18 +1231,34 @@ new Chart(ctx1, {
         ticks: { color: '#8f98a0', font: { size: 12 } }
       },
       y: {
-        min: 40, max: 100,
+        min: 0, max: 90,
         grid: { color: 'rgba(42,63,95,0.5)' },
-        ticks: {
-          color: '#8f98a0',
-          font: { size: 12 },
-          callback: v => v + '%'
-        },
+        ticks: { color: '#8f98a0', font: { size: 12 }, callback: v => v + '%' },
         title: { display: true, text: '% positive reviews (median)', color: '#8f98a0', font: { size: 12 } }
       }
     }
-  }
+  },
+  plugins: [{
+    id: 'q1ValueLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx, scales: { x, y } } = chart;
+      chart.data.datasets[0].data.forEach((val, i) => {
+        if (val === null) return;
+        const xPos = x.getPixelForValue(i);
+        const yPos = y.getPixelForValue(val);
+        ctx.save();
+        ctx.font = '11px Inter, Arial, sans-serif';
+        ctx.fillStyle = '#8f98a0';
+        ctx.textAlign = 'center';
+        ctx.fillText(val.toFixed(1) + '%', xPos, yPos - 8);
+        ctx.restore();
+      });
+    }
+  }]
 });
+
+document.getElementById('q1-insight').textContent = q1Insights['median'];
+document.getElementById('q1-chart-title').textContent = 'Price vs player satisfaction on Steam';
 
 // CHART 2 — LUCAS — Scatter
 const ctx2 = document.getElementById('chartLucas').getContext('2d');
