@@ -315,7 +315,7 @@
   }
   .badge-dot { width: 7px; height: 7px; border-radius: 50%; }
   .panel-question {
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 700;
     color: #fff;
     line-height: 1.3;
@@ -351,7 +351,7 @@
   }
   .chart-wrapper { position: relative; }
   .chart-title {
-    font-size: 13px;
+    font-size: 18px;
     font-weight: 600;
     color: var(--steam-highlight);
     margin-bottom: 16px;
@@ -875,40 +875,41 @@
           Francesco
         </div>
         <div class="panel-question">Are the most expensive games really the best?</div>
+        <!--
         <ul class="panel-list">
           <li>Relationship between <span>price range</span> and <span>% positive reviews</span> on Steam</li>
           <li>56,655 games with at least 10 reviews · grouped into 6 price tiers</li>
           <li>Median positive review % per tier · hover bars for game count</li>
         </ul>
+        -->
       </div>
 
-      <!-- metric cards -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:0;background:var(--steam-card);border:1px solid var(--steam-border);border-bottom:none;padding:16px 20px 12px;">
-        <div style="background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:4px;padding:12px 14px;">
-          <div style="font-size:11px;color:var(--steam-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Total games analysed</div>
-          <div style="font-size:22px;font-weight:700;color:#fff;">56,655</div>
-        </div>
-        <div style="background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:4px;padding:12px 14px;">
-          <div style="font-size:11px;color:var(--steam-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Best median score</div>
-          <div style="font-size:22px;font-weight:700;color:#5ba32b;">83.0% <span style="font-size:13px;font-weight:400;color:var(--steam-muted);">$10–$19.99</span></div>
-        </div>
-        <div style="background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:4px;padding:12px 14px;">
-          <div style="font-size:11px;color:var(--steam-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Worst median score</div>
-          <div style="font-size:22px;font-weight:700;color:#c94f2c;">65.8% <span style="font-size:13px;font-weight:400;color:var(--steam-muted);">$50+</span></div>
-        </div>
-      </div>
-
-      <div class="chart-box" style="border-top:none;">
+      <div class="chart-box">
         <div class="chart-title">
           <span id="q1-chart-title">Median positive review % by price tier</span>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"> 
           <span class="chart-source">Source: FronkonGames Steam Dataset (Kaggle) · CC-BY 4.0</span> 
         </div>
         </div>
+        <!-- metric cards -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+          <div style="background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:4px;padding:12px 14px;">
+            <div style="font-size:11px;color:var(--steam-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Total games analysed</div>
+            <div style="font-size:22px;font-weight:700;color:#fff;">56,655</div>
+          </div>
+          <div style="background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:4px;padding:12px 14px;">
+            <div style="font-size:11px;color:var(--steam-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Best median score</div>
+            <div style="font-size:22px;font-weight:700;color:#5ba32b;">83.0% <span style="font-size:13px;font-weight:400;color:var(--steam-muted);">$10–$19.99</span></div>
+          </div>
+          <div style="background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:4px;padding:12px 14px;">
+            <div style="font-size:11px;color:var(--steam-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;">Worst median score</div>
+            <div style="font-size:22px;font-weight:700;color:#c94f2c;">65.8% <span style="font-size:13px;font-weight:400;color:var(--steam-muted);">$50+</span></div>
+          </div>
+        </div>
         <div class="chart-wrapper" style="height:300px">
           <canvas id="chartFrancesco" role="img" aria-label="Bar chart of Steam game price tiers vs review score.">Price tiers: Free 78.3%, $1-9 81.8%, $10-19 83%, $20-29 81.4%, $30-49 78.8%, $50+ 65.8%.</canvas>
         </div>
-        <div id="q1-insight" style="margin-top:14px;padding:10px 12px;background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:3px;font-size:12px;color:var(--steam-muted);line-height:1.6;"></div>
+        <!-- <div id="q1-insight" style="margin-top:14px;padding:10px 12px;background:var(--steam-panel);border:1px solid var(--steam-border);border-radius:3px;font-size:12px;color:var(--steam-muted);line-height:1.6;"></div> -->
       </div>
 
       <div class="takeaway">
@@ -916,9 +917,9 @@
         <div>
           <div class="takeaway-label">Take-home message</div>
           <ul class="takeaway-list">
-            <li>The <strong>$10–$19.99</strong> tier has the highest median satisfaction (83.0%) — mid-range games hit the quality sweet spot</li>
-            <li><strong>$50+ games</strong> score 65.8% median — nearly 18 points below the best tier, a dramatic drop-off</li>
-            <li>When factoring in price, <strong>$0.01–$9.99 games</strong> deliver approximately 16× more enjoyment per dollar than $50+ titles</li>
+            <li>The <strong>$10–$19.99</strong> tier has the highest median satisfaction (83.0%). <!-- — mid-range games hit the quality sweet spot --></li>
+            <li><strong>$50+ games</strong> score 65.8% median. <!-- — nearly 18 points below the best tier, a dramatic drop-off --></li>
+            <li>When factoring in price, <strong>$0.01–$9.99 games</strong> deliver approximately 16× more enjoyment per dollar than $50+ titles.</li>
           </ul>
         </div>
       </div>
@@ -941,15 +942,17 @@
           Lucas
         </div>
         <div class="panel-question">Are the most watched games on Twitch also the most played on Steam?</div>
+        <!--
         <ul class="panel-list">
           <li>Correlation between <span>Twitch viewership hours</span> and <span>estimated Steam owners</span></li>
           <li>Top 25 titles present on both platforms — real data from Twitch_game_data.csv + Steam dataset</li>
           <li>Twitch hours aggregated across all months (2016–2023) · color by Category</li>
         </ul>
+        -->
       </div>
       <div class="chart-box">
         <div class="chart-title">
-          Twitch viewership vs Steam owners — 25 titles · x-axis capped at 2,000M 
+          Twitch viewership vs Steam owners
           <!-- (Just Chatting: 14.398M, GTA V: 7,482M, Dota 2: 4,504M, off-chart) -->
           <span class="chart-source">Twitch Game Data + FronkonGames Steam Dataset (Kaggle)</span>
         </div>
@@ -962,10 +965,10 @@
         <div>
           <div class="takeaway-label" style="color:#1a9fff">Take-home message</div>
           <ul class="takeaway-list" ">
-            <li><strong style="color:#e8f0ff;">Dota 2</strong> (~4,504M h) and <strong style="color:#e8f0ff;">Apex Legends</strong> (~2,655M h) are extreme outliers in Twitch viewership — removed from the x-axis for readability.</li>
-            <li>The <strong style="color:#5fd4c4;">most-watched titles </strong> are predominantly <strong style="color:#5fd4c4;">multiplayer or F2P games</strong> — they cluster in the high-viewership right side of the chart, often with large Steam ownership too.</li>
-            <li><strong style="color:#b39ddb;">Single-player games (purple)</strong> dominate the left side: most have modest Twitch hours and relatively low Steam ownership — suggesting they are played more than spectated.</li>
-            <li>While a <strong style="color:#e8f0ff;">loose positive trend</strong> exists, the correlation is weak and non-linear — the wide vertical scatter at any given viewership level suggests that <strong style="color:#e8f0ff;"> high Twitch viewership does not necessarily translate into more Steam downloads.</strong></li>
+            <li><strong style="color:#e8f0ff;">Dota 2</strong> (~4,504M h) and <strong style="color:#e8f0ff;">Apex Legends</strong> (~2,655M h) are extreme outliers in Twitch viewership.</li>
+            <li>The <strong style="color:#5fd4c4;">most-watched titles </strong> are predominantly <strong style="color:#5fd4c4;">multiplayer or F2P games</strong>. <!-- — they cluster in the high-viewership right side of the chart, often with large Steam ownership too. --></li>
+            <li><strong style="color:#b39ddb;">Single-player games (purple)</strong> dominate the left side: most have modest Twitch hours and relatively low Steam ownership. <!-- — suggesting they are played more than spectated. --> </li>
+            <li>While a <strong style="color:#e8f0ff;">loose positive trend</strong> exists, the correlation is weak and non-linear. <!-- — the wide vertical scatter at any given viewership level suggests that <strong style="color:#e8f0ff;"> high Twitch viewership does not necessarily translate into more Steam downloads. --></strong></li>
         </div>
       </div>
       <div class="mapping-box">
@@ -990,11 +993,13 @@
           Francesca
         </div>
         <div class="panel-question">Which genre retains players the most?</div>
+        <!--
         <ul class="panel-list">
           <li>Metric: <span>median playtime forever</span> — median total hours per user, per genre</li>
           <li>Median preferred over mean: outliers like DOTA 2 and Forza strongly skew the mean</li>
           <li>12 main game genres · hover for sample size per genre</li>
         </ul>
+        -->
       </div>
       <div class="chart-box">
         <div class="chart-title">
@@ -1010,10 +1015,10 @@
         <div>
           <div class="takeaway-label" style="color:#e69826">Take-home message</div>
           <ul class="takeaway-list">
-            <li><strong>Massively Multiplayer</strong> retains players the most (6.2h median) — designed for the long run</li>
-            <li><strong>RPG and Strategy</strong> follow: deep progression = longer sessions</li>
-            <li><strong>Racing and Free to Play</strong> have a very high mean (74h, 81h) but low median — a few viral titles (Forza, DOTA 2) pull the average up</li>
-            <li><strong>Action and Casual</strong> have the lowest median: fast consumption, short sessions</li>
+            <li><strong>Massively Multiplayer</strong> retains players the most (6.2h median). <!-- — designed for the long run. --></li>
+            <li><strong>RPG and Strategy</strong> follow: deep progression = longer sessions.</li>
+            <li><strong>Racing and Free to Play</strong> have a very high mean (74h, 81h) but low median. <!-- — a few viral titles (Forza, DOTA 2) pull the average up. --></li>
+            <li><strong>Action and Casual</strong> have the lowest median: fast consumption, short sessions.</li>
           </ul>
         </div>
       </div>
@@ -1174,9 +1179,10 @@ const q1Data = [
   { tier: '$50+',   avg: 60.1, median: 65.8, value: 0.01,  count: 208   },
 ];
 
-const q1Insights = {
-  median: 'The $10–$19.99 tier leads at 83.0% median satisfaction. $50+ games fall to 65.8% — nearly 18 points behind. Price and quality do not scale together.',
-};
+
+//const q1Insights = {
+//  median: 'The $10–$19.99 tier leads at 83.0% median satisfaction. $50+ games fall to 65.8% — nearly 18 points behind. Price and quality do not scale together.',
+//};
 
 const q1Modes = {
   median: { key: 'median', yLabel: '% positive reviews (median)', suffix: '%', min: 0, max: 90 },
@@ -1260,7 +1266,7 @@ const q1Chart = new Chart(ctx1, {
   }]
 });
 
-document.getElementById('q1-insight').textContent = q1Insights['median'];
+// document.getElementById('q1-insight').textContent = q1Insights['median'];
 document.getElementById('q1-chart-title').textContent = 'Price vs player satisfaction on Steam';
 
 // CHART 2 — LUCAS — Scatter
